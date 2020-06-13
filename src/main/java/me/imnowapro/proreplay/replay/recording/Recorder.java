@@ -25,7 +25,7 @@ public class Recorder extends PacketAdapter {
         PacketType.Play.Client.LOOK, PacketType.Play.Server.REL_ENTITY_MOVE,
         PacketType.Play.Server.REL_ENTITY_MOVE_LOOK, PacketType.Play.Server.ENTITY_LOOK,
         PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
-        PacketType.Play.Server.MAP);
+        PacketType.Play.Server.MAP, PacketType.Play.Server.LOGIN);
     this.recordedPlayer = recordedPlayer;
   }
 
@@ -48,17 +48,24 @@ public class Recorder extends PacketAdapter {
   @Override
   public void onPacketSending(PacketEvent event) {
     if (event.getPlayer().equals(this.recordedPlayer)) {
+      if (event.getPacketType().equals(PacketType.Play.Server.LOGIN)) {
+        System.out.println(event.getPlayer().getName());
+      }
       savePacket(event.getPacket());
     }
   }
 
-  public void record() {
+  public void start() {
     this.startTime = System.currentTimeMillis();
+    savePacket(ProReplay.getInstance().getPacketConverter()
+        .createLoginSuccessPacket(this.recordedPlayer));
+    ProtocolLibrary.getProtocolManager().addPacketListener(this);
+    savePacket(ProReplay.getInstance().getPacketConverter()
+        .createLoginPacket(this.recordedPlayer));
     savePacket(ProReplay.getInstance().getPacketConverter()
         .createPlayerListItemPacket(this.recordedPlayer));
     savePacket(ProReplay.getInstance().getPacketConverter()
         .createPlayerSpawnPacket(this.recordedPlayer));
-    ProtocolLibrary.getProtocolManager().addPacketListener(this);
   }
 
   public void stop() {

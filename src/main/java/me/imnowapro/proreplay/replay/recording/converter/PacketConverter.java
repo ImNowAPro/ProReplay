@@ -10,6 +10,10 @@ import org.bukkit.entity.Player;
 
 public interface PacketConverter {
 
+  PacketContainer createLoginSuccessPacket(Player player);
+
+  PacketContainer createLoginPacket(Player player);
+
   PacketContainer createPlayerListItemPacket(Player player);
 
   PacketContainer createPlayerSpawnPacket(Player player);

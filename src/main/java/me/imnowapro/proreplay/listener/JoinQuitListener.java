@@ -17,7 +17,7 @@ public class JoinQuitListener implements Listener {
   public void onJoin(PlayerJoinEvent event) {
     // Test
     Recorder recorder = new Recorder(event.getPlayer());
-    recorder.record();
+    recorder.start();
     Bukkit.getScheduler().runTaskLaterAsynchronously(ProReplay.getInstance(), () -> {
       recorder.stop();
       Replay replay = new Replay(recorder);

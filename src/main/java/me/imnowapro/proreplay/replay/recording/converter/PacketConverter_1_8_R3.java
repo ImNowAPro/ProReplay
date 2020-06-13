@@ -8,10 +8,35 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import java.util.Collections;
+import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class PacketConverter_1_8_R3 implements PacketConverter {
+
+  @Override
+  public PacketContainer createLoginSuccessPacket(Player player) {
+    PacketContainer packet = new PacketContainer(PacketType.Login.Server.SUCCESS);
+    // GameProfile of player was also tested
+    packet.getGameProfiles().write(0,
+        new WrappedGameProfile(UUID.randomUUID(), "ReplayViewer"));
+    return packet;
+  }
+
+  @Override
+  public PacketContainer createLoginPacket(Player player) {
+    PacketContainer packet = new PacketContainer(PacketType.Play.Server.LOGIN);
+    packet.getIntegers().write(0, player.getEntityId());
+    packet.getGameModes().write(0, EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()));
+    packet.getIntegers().write(1, player.getWorld().getDifficulty().getValue());
+    packet.getDifficulties().write(0,
+        EnumWrappers.Difficulty.valueOf(player.getWorld().getDifficulty().name()));
+    packet.getIntegers().write(2, Bukkit.getMaxPlayers());
+    packet.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
+    packet.getBooleans().write(0, false);
+    return packet;
+  }
 
   @Override
   public PacketContainer createPlayerListItemPacket(Player player) {
