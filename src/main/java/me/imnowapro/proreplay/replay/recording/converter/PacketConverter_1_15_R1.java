@@ -2,11 +2,13 @@ package me.imnowapro.proreplay.replay.recording.converter;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.*;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import java.util.Collections;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import java.util.Collections;
 
 public class PacketConverter_1_15_R1 implements PacketConverter {
 
