@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.netty.WirePacket;
 import java.util.Date;
 import java.util.LinkedList;
 import me.imnowapro.proreplay.ProReplay;
@@ -73,8 +72,7 @@ public class Recorder extends PacketAdapter {
   }
 
   private void savePacket(PacketContainer packet) {
-    recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime),
-        WirePacket.fromPacket(packet)));
+    recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime), packet));
   }
 
   public Player getRecordedPlayer() {

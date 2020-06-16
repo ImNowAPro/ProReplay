@@ -15,7 +15,6 @@ public class PacketUtil {
   public static byte[] toVarInt(int value) {
     int size = varIntSize(value);
     ByteBuffer output = ByteBuffer.allocate(size);
-
     do {
       byte temp = (byte) (value & 0b01111111);
       value >>>= 7;
@@ -28,12 +27,12 @@ public class PacketUtil {
     return output.array();
   }
 
-  public static int varIntSize(int i) {
+  public static int varIntSize(int value) {
     int result = 0;
     do {
       result++;
-      i >>>= 7;
-    } while (i != 0);
+      value >>>= 7;
+    } while (value != 0);
     return result;
   }
 }
