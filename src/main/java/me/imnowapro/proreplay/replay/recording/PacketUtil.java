@@ -29,6 +29,7 @@ public class PacketUtil {
     int result = 0;
     do {
       value >>>= 7;
+      result++;
     } while (value != 0);
     return result;
   }
