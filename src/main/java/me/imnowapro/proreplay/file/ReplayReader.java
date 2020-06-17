@@ -15,7 +15,7 @@ import java.util.zip.ZipInputStream;
 import me.imnowapro.proreplay.ProReplay;
 import me.imnowapro.proreplay.replay.PacketData;
 import me.imnowapro.proreplay.replay.Replay;
-import me.imnowapro.proreplay.replay.recording.converter.PacketUtil;
+import me.imnowapro.proreplay.replay.recording.PacketUtil;
 
 public class ReplayReader {
 
@@ -35,7 +35,6 @@ public class ReplayReader {
         byteArrayStream.write(this.inputStream.read());
       }
       ByteBuffer buffer = ByteBuffer.wrap(byteArrayStream.toByteArray());
-      byteArrayStream.close();
 
       if (entry.getName().equals("recording.tmcpr")) {
         while (buffer.remaining() >= Integer.BYTES * 2) {
@@ -60,17 +59,18 @@ public class ReplayReader {
   }
 
   private static int readVarInt(ByteBuffer buffer) {
-    int value = 0;
-    int temp = 0;
+    int numRead = 0;
+    int result = 0;
     byte read;
     do {
       read = buffer.get();
-      value |= (read & 127) << temp++ * 7;
-      if (temp > 5) {
-        throw new RuntimeException("VarInt too big");
+      int value = (read & 0b01111111);
+      result |= (value << (7 * numRead));
+      numRead++;
+      if (numRead > 5) {
+        throw new RuntimeException("VarInt is too big");
       }
-    } while ((read & 128) == 128);
-
-    return value;
+    } while ((read & 0b10000000) != 0);
+    return result;
   }
 }

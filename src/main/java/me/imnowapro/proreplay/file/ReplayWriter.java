@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream;
 import me.imnowapro.proreplay.ProReplay;
 import me.imnowapro.proreplay.replay.PacketData;
 import me.imnowapro.proreplay.replay.Replay;
-import me.imnowapro.proreplay.replay.recording.converter.PacketUtil;
+import me.imnowapro.proreplay.replay.recording.PacketUtil;
 
 public class ReplayWriter {
 
