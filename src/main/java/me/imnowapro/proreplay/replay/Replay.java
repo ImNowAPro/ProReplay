@@ -23,6 +23,8 @@ public class Replay {
     this.metaData.put("duration", this.packets.getLast().getTime());
     this.metaData.put("date", recorder.getStartTime());
     this.metaData.put("mcversion", recorder.getVersion());
+    this.metaData.put("protocol", recorder.getProtocolVersion());
+    this.metaData.put("fileFormatVersion", 14);
     this.metaData.put("players",
         Collections.singleton(recorder.getRecordedPlayer().getUniqueId().toString()));
   }

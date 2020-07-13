@@ -21,7 +21,7 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     PacketContainer packet = new PacketContainer(PacketType.Login.Server.SUCCESS);
     // GameProfile of player was also tested
     packet.getGameProfiles().write(0,
-        new WrappedGameProfile(UUID.randomUUID(), "ReplayViewer"));
+        new WrappedGameProfile(UUID.nameUUIDFromBytes(new byte[0]), "Player"));
     return packet;
   }
 
@@ -29,7 +29,7 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
   public PacketContainer createLoginPacket(Player player) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.LOGIN);
     packet.getIntegers().write(0, player.getEntityId());
-    packet.getGameModes().write(0, EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()));
+    packet.getGameModes().write(0, EnumWrappers.NativeGameMode.NOT_SET);
     packet.getIntegers().write(1, player.getWorld().getDifficulty().getValue());
     packet.getDifficulties().write(0,
         EnumWrappers.Difficulty.valueOf(player.getWorld().getDifficulty().name()));
@@ -43,7 +43,7 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
   public PacketContainer createPlayerListItemPacket(Player player) {
     PlayerInfoData playerInfoData = new PlayerInfoData(WrappedGameProfile.fromPlayer(player),
         1,
-        EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()),
+        EnumWrappers.NativeGameMode.NOT_SET,
         WrappedChatComponent.fromText(player.getDisplayName()));
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.PLAYER_INFO);
     packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);

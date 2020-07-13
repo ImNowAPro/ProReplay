@@ -9,12 +9,12 @@ import me.imnowapro.proreplay.replay.recording.Recorder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 public class JoinQuitListener implements Listener {
 
   @EventHandler
-  public void onJoin(PlayerJoinEvent event) {
+  public void onLogin(PlayerLoginEvent event) {
     // Test
     Recorder recorder = new Recorder(event.getPlayer());
     recorder.start();

@@ -24,7 +24,11 @@ public class Recorder extends PacketAdapter {
         PacketType.Play.Client.LOOK, PacketType.Play.Server.REL_ENTITY_MOVE,
         PacketType.Play.Server.REL_ENTITY_MOVE_LOOK, PacketType.Play.Server.ENTITY_LOOK,
         PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
-        PacketType.Play.Server.MAP, PacketType.Play.Server.LOGIN);
+        PacketType.Play.Server.MAP, PacketType.Play.Server.LOGIN,
+        PacketType.Play.Server.LIGHT_UPDATE, PacketType.Play.Server.WORLD_BORDER,
+        PacketType.Play.Server.SPAWN_POSITION, PacketType.Play.Server.LOOK_AT,
+        PacketType.Play.Server.COMMANDS, PacketType.Play.Server.RECIPES,
+        PacketType.Play.Server.TAGS, PacketType.Play.Server.VIEW_CENTRE);
     this.recordedPlayer = recordedPlayer;
   }
 
@@ -47,9 +51,6 @@ public class Recorder extends PacketAdapter {
   @Override
   public void onPacketSending(PacketEvent event) {
     if (event.getPlayer().equals(this.recordedPlayer)) {
-      if (event.getPacketType().equals(PacketType.Play.Server.LOGIN)) {
-        System.out.println(event.getPlayer().getName());
-      }
       savePacket(event.getPacket());
     }
   }
@@ -89,5 +90,9 @@ public class Recorder extends PacketAdapter {
 
   public String getVersion() {
     return ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion();
+  }
+
+  public int getProtocolVersion() {
+    return ProtocolLibrary.getProtocolManager().getProtocolVersion(this.recordedPlayer);
   }
 }
