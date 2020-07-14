@@ -18,6 +18,8 @@ public class Recorder extends PacketAdapter {
   private long startTime = new Date().getTime();
   private LinkedList<PacketData> recordedPackets = new LinkedList<>();
 
+  private int recordedChunks = 0;
+
   public Recorder(Player recordedPlayer) {
     super(ProReplay.getInstance(), ListenerPriority.LOWEST,
         PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK,
@@ -73,7 +75,14 @@ public class Recorder extends PacketAdapter {
   }
 
   private void savePacket(PacketContainer packet) {
-    recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime), packet));
+    PacketData data = new PacketData((int) (System.currentTimeMillis() - this.startTime), packet);
+    if ((packet.getType().equals(PacketType.Play.Server.MAP_CHUNK)
+        || packet.getType().equals(PacketType.Play.Server.MAP_CHUNK_BULK)) && recordedChunks < 49) {
+      recordedPackets.add(1 + recordedChunks, data);
+      recordedChunks++;
+    } else {
+      recordedPackets.add(data);
+    }
   }
 
   public Player getRecordedPlayer() {
