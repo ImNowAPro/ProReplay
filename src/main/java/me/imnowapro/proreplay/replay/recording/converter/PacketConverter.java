@@ -1,5 +1,6 @@
 package me.imnowapro.proreplay.replay.recording.converter;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
@@ -10,7 +11,11 @@ import org.bukkit.entity.Player;
 
 public interface PacketConverter {
 
+  int getPacketID(PacketType type);
+
   PacketContainer createLoginSuccessPacket(Player player);
+
+  PacketContainer createCameraPacket(Player player);
 
   PacketContainer createLoginPacket(Player player);
 

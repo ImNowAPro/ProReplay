@@ -14,7 +14,18 @@ import org.bukkit.util.Vector;
 public class PacketConverter_1_15_R1 implements PacketConverter {
 
   @Override
+  public int getPacketID(PacketType type) {
+    return 0;
+  }
+
+  @Override
   public PacketContainer createLoginSuccessPacket(Player player) {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public PacketContainer createCameraPacket(Player player) {
     // TODO
     return null;
   }

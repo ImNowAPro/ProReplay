@@ -1,7 +1,11 @@
 package me.imnowapro.proreplay;
 
+import com.comphenix.protocol.PacketType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.IOException;
+import me.imnowapro.proreplay.file.ReplayReader;
 import me.imnowapro.proreplay.listener.JoinQuitListener;
 import me.imnowapro.proreplay.replay.recording.converter.PacketConverter;
 import org.bukkit.Bukkit;
@@ -23,6 +27,17 @@ public class ProReplay extends JavaPlugin implements Listener {
     if (PacketConverter.getConverter().isPresent()) {
       this.packetConverter = PacketConverter.getConverter().get();
       getLogger().info("Successfully loaded PacketConverter.");
+    }
+    try {
+      new ReplayReader(new File(getDataFolder(), "rewi.mcpr"))
+          .readAndClose().getPackets().forEach(packet -> {
+        PacketType type = PacketType.findCurrent(PacketType.Protocol.PLAY, PacketType.Sender.SERVER, packet.getId());
+        getLogger().info("0x" + Integer.toHexString(packet.getId()) + " "
+            + (type.getPacketClass() != null ? type.getPacketClass().getSimpleName() : "") + " "
+            + type.name());
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     registerListener();
     getLogger().info("Successfully loaded ProReplay.");

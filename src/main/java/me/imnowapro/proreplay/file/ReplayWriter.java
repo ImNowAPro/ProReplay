@@ -3,7 +3,6 @@ package me.imnowapro.proreplay.file;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,12 +22,13 @@ public class ReplayWriter {
   public void writeAndClose(Replay replay) throws IOException {
     this.outputStream.putNextEntry(new ZipEntry("recording.tmcpr"));
     for (PacketData packetData : replay.getPackets()) {
-      this.outputStream.write(ByteBuffer.allocate(Integer.BYTES * 2)
-          .putInt(packetData.getTime())
-          .putInt(PacketUtil.varIntSize(packetData.getId()) + packetData.getBytes().length)
-          .array());
-      this.outputStream.write(PacketUtil.toVarInt(packetData.getId()));
+      byte[] packetID = PacketUtil.toVarInt(packetData.getId());
+      this.outputStream.write(PacketUtil.toByteArray(packetData.getTime()));
+      this.outputStream.write(PacketUtil.toByteArray(packetID.length
+          + packetData.getBytes().length));
+      this.outputStream.write(packetID);
       this.outputStream.write(packetData.getBytes());
+      //ProReplay.getInstance().getLogger().info(PacketType.findCurrent(PacketType.Protocol.PLAY, PacketType.Sender.SERVER, packetData.getId()).name());
     }
     this.outputStream.closeEntry();
     this.outputStream.flush();
