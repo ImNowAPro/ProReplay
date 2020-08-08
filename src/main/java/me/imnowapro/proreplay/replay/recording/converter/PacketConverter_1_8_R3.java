@@ -7,21 +7,21 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import me.imnowapro.proreplay.replay.recording.PacketUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class PacketConverter_1_8_R3 implements PacketConverter {
 
-  private static final Map<PacketType, Integer> PACKET_IDS = new HashMap<>();
+  private static final BiMap<PacketType, Integer> PACKET_IDS = HashBiMap.create();
 
   static {
-    PACKET_IDS.put(PacketType.Login.Server.SUCCESS, 0x02);
     PACKET_IDS.put(PacketType.Play.Server.LOGIN, 0x01);
     PACKET_IDS.put(PacketType.Play.Server.CHAT, 0x02);
     PACKET_IDS.put(PacketType.Play.Server.UPDATE_TIME, 0x03);
@@ -47,13 +47,25 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     PACKET_IDS.put(PacketType.Play.Server.ENTITY_STATUS, 0x1A);
     PACKET_IDS.put(PacketType.Play.Server.MAP_CHUNK, 0x21);
     PACKET_IDS.put(PacketType.Play.Server.MAP_CHUNK_BULK, 0x26);
+    PACKET_IDS.put(PacketType.Play.Server.POSITION, 0x36);
     PACKET_IDS.put(PacketType.Play.Server.PLAYER_INFO, 0x38);
+    PACKET_IDS.put(PacketType.Play.Server.VIEW_CENTRE, 0x41);
     PACKET_IDS.put(PacketType.Play.Server.WORLD_BORDER, 0x44);
   }
 
   @Override
   public int getPacketID(PacketType type) {
-    return PACKET_IDS.getOrDefault(type, type.getCurrentId());
+    if (type.getProtocol().equals(PacketType.Protocol.PLAY)) {
+      return PACKET_IDS.getOrDefault(type, type.getCurrentId());
+    } else if (type.equals(PacketType.Login.Server.SUCCESS)) {
+      return 0x02;
+    }
+    return type.getCurrentId();
+  }
+
+  @Override
+  public PacketType getPacketType(int id) {
+    return PACKET_IDS.inverse().getOrDefault(id, null);
   }
 
   @Override
@@ -110,6 +122,20 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     packet.getIntegers().write(4,
         (player.getItemInHand() != null ? player.getItemInHand().getTypeId() : 0));
     packet.getDataWatcherModifier().write(0, WrappedDataWatcher.getEntityWatcher(player));
+    return packet;
+  }
+
+  @Override
+  public PacketContainer createPositionPacket(Location position) {
+    PacketContainer packet = new PacketContainer(PacketType.Play.Server.POSITION);
+    packet.getDoubles().write(0, position.getX())
+        .write(1, position.getY())
+        .write(2, position.getZ());
+    packet.getFloat().write(0, position.getYaw())
+        .write(1, position.getPitch());
+    WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
+    dataWatcher.setObject(0, (byte) 0);
+    packet.getWatchableCollectionModifier().writeDefaults();
     return packet;
   }
 

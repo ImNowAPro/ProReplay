@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import java.util.Collections;
 import me.imnowapro.proreplay.replay.recording.PacketUtil;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -16,6 +17,11 @@ public class PacketConverter_1_15_R1 implements PacketConverter {
   @Override
   public int getPacketID(PacketType type) {
     return 0;
+  }
+
+  @Override
+  public PacketType getPacketType(int id) {
+    return null;
   }
 
   @Override
@@ -59,6 +65,11 @@ public class PacketConverter_1_15_R1 implements PacketConverter {
     packet.getBytes().write(0, PacketUtil.toAngle(player.getLocation().getYaw()))
         .write(1, PacketUtil.toAngle(player.getLocation().getPitch()));
     return packet;
+  }
+
+  @Override
+  public PacketContainer createPositionPacket(Location position) {
+    return null;
   }
 
   @Override

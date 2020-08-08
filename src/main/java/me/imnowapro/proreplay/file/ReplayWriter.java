@@ -28,7 +28,6 @@ public class ReplayWriter {
           + packetData.getBytes().length));
       this.outputStream.write(packetID);
       this.outputStream.write(packetData.getBytes());
-      //ProReplay.getInstance().getLogger().info(PacketType.findCurrent(PacketType.Protocol.PLAY, PacketType.Sender.SERVER, packetData.getId()).name());
     }
     this.outputStream.closeEntry();
     this.outputStream.flush();

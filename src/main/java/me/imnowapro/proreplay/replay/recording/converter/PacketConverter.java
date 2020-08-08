@@ -7,11 +7,14 @@ import java.util.Optional;
 import java.util.logging.Level;
 import me.imnowapro.proreplay.ProReplay;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public interface PacketConverter {
 
   int getPacketID(PacketType type);
+
+  PacketType getPacketType(int id);
 
   PacketContainer createLoginSuccessPacket(Player player);
 
@@ -22,6 +25,8 @@ public interface PacketConverter {
   PacketContainer createPlayerListItemPacket(Player player);
 
   PacketContainer createPlayerSpawnPacket(Player player);
+
+  PacketContainer createPositionPacket(Location position);
 
   PacketContainer convertPositionPacket(Player player, PacketContainer oldPacket);
 
