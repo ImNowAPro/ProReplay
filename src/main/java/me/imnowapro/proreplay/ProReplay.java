@@ -23,14 +23,20 @@ public class ProReplay extends JavaPlugin implements Listener {
     if (PacketConverter.getConverter().isPresent()) {
       this.packetConverter = PacketConverter.getConverter().get();
       getLogger().info("Successfully loaded PacketConverter.");
+    } else {
+      getLogger().severe("Your minecraft-version isn't supported!");
+      Bukkit.getPluginManager().disablePlugin(this);
+      return;
     }
     /*try {
       new ReplayReader(new File(getDataFolder(), "rewi.mcpr"))
           .readAndClose().getPackets().forEach(packet -> {
         PacketType type = packetConverter.getPacketType(packet.getId());
-        getLogger().info("0x" + Integer.toHexString(packet.getId()) + " "
-            + (type.getPacketClass() != null ? type.getPacketClass().getSimpleName() : "") + " "
-            + type.name());
+        if (type != null) {
+          getLogger().info("0x" + Integer.toHexString(packet.getId()) + " "
+              + (type.getPacketClass() != null ? type.getPacketClass().getSimpleName() : "") + " "
+              + type.name());
+        }
       });
     } catch (IOException e) {
       e.printStackTrace();

@@ -22,12 +22,14 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
   private static final BiMap<PacketType, Integer> PACKET_IDS = HashBiMap.create();
 
   static {
+    // Only contains necessary packets.
     PACKET_IDS.put(PacketType.Play.Server.LOGIN, 0x01);
     PACKET_IDS.put(PacketType.Play.Server.CHAT, 0x02);
     PACKET_IDS.put(PacketType.Play.Server.UPDATE_TIME, 0x03);
     PACKET_IDS.put(PacketType.Play.Server.ENTITY_EQUIPMENT, 0x04);
     PACKET_IDS.put(PacketType.Play.Server.SPAWN_POSITION, 0x05);
     PACKET_IDS.put(PacketType.Play.Server.RESPAWN, 0x07);
+    PACKET_IDS.put(PacketType.Play.Server.POSITION, 0x8);
     PACKET_IDS.put(PacketType.Play.Server.BED, 0x0A);
     PACKET_IDS.put(PacketType.Play.Server.ANIMATION, 0x0B);
     PACKET_IDS.put(PacketType.Play.Server.NAMED_ENTITY_SPAWN, 0x0C);
@@ -45,27 +47,49 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     PACKET_IDS.put(PacketType.Play.Server.ENTITY_TELEPORT, 0x18);
     PACKET_IDS.put(PacketType.Play.Server.ENTITY_HEAD_ROTATION, 0x19);
     PACKET_IDS.put(PacketType.Play.Server.ENTITY_STATUS, 0x1A);
+    PACKET_IDS.put(PacketType.Play.Server.ATTACH_ENTITY, 0x1B);
+    PACKET_IDS.put(PacketType.Play.Server.ENTITY_METADATA, 0x1C);
+    PACKET_IDS.put(PacketType.Play.Server.ENTITY_EFFECT, 0x1D);
+    PACKET_IDS.put(PacketType.Play.Server.REMOVE_ENTITY_EFFECT, 0x1E);
+    PACKET_IDS.put(PacketType.Play.Server.EXPERIENCE, 0x1F);
+    PACKET_IDS.put(PacketType.Play.Server.UPDATE_ATTRIBUTES, 0x20);
     PACKET_IDS.put(PacketType.Play.Server.MAP_CHUNK, 0x21);
+    PACKET_IDS.put(PacketType.Play.Server.MULTI_BLOCK_CHANGE, 0x22);
+    PACKET_IDS.put(PacketType.Play.Server.BLOCK_CHANGE, 0x23);
+    PACKET_IDS.put(PacketType.Play.Server.BLOCK_ACTION, 0x24);
+    PACKET_IDS.put(PacketType.Play.Server.BLOCK_BREAK_ANIMATION, 0x25);
     PACKET_IDS.put(PacketType.Play.Server.MAP_CHUNK_BULK, 0x26);
-    PACKET_IDS.put(PacketType.Play.Server.POSITION, 0x36);
+    PACKET_IDS.put(PacketType.Play.Server.EXPLOSION, 0x27);
+    PACKET_IDS.put(PacketType.Play.Server.WORLD_EVENT, 0x28);
+    PACKET_IDS.put(PacketType.Play.Server.NAMED_SOUND_EFFECT, 0x29);
+    PACKET_IDS.put(PacketType.Play.Server.WORLD_PARTICLES, 0x2A);
+    PACKET_IDS.put(PacketType.Play.Server.GAME_STATE_CHANGE, 0x2B);
+    PACKET_IDS.put(PacketType.Play.Server.SPAWN_ENTITY_WEATHER, 0x2C);
+    PACKET_IDS.put(PacketType.Play.Server.UPDATE_SIGN, 0x33);
     PACKET_IDS.put(PacketType.Play.Server.PLAYER_INFO, 0x38);
+    PACKET_IDS.put(PacketType.Play.Server.SCOREBOARD_OBJECTIVE, 0x3B);
+    PACKET_IDS.put(PacketType.Play.Server.SCOREBOARD_SCORE, 0x3C);
+    PACKET_IDS.put(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE, 0x3D);
+    PACKET_IDS.put(PacketType.Play.Server.SCOREBOARD_TEAM, 0x3E);
     PACKET_IDS.put(PacketType.Play.Server.VIEW_CENTRE, 0x41);
+    PACKET_IDS.put(PacketType.Play.Server.CAMERA, 0x43);
     PACKET_IDS.put(PacketType.Play.Server.WORLD_BORDER, 0x44);
+    PACKET_IDS.put(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER, 0x47);
+    PACKET_IDS.put(PacketType.Play.Server.UPDATE_ENTITY_NBT, 0x49);
   }
 
   @Override
   public int getPacketID(PacketType type) {
     if (type.getProtocol().equals(PacketType.Protocol.PLAY)) {
       return PACKET_IDS.getOrDefault(type, type.getCurrentId());
-    } else if (type.equals(PacketType.Login.Server.SUCCESS)) {
-      return 0x02;
     }
     return type.getCurrentId();
   }
 
   @Override
   public PacketType getPacketType(int id) {
-    return PACKET_IDS.inverse().getOrDefault(id, null);
+    return PACKET_IDS.inverse().getOrDefault(id,
+        PacketType.findCurrent(PacketType.Protocol.PLAY, PacketType.Sender.SERVER, id));
   }
 
   @Override
@@ -73,13 +97,6 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     PacketContainer packet = new PacketContainer(PacketType.Login.Server.SUCCESS);
     packet.getGameProfiles().write(0,
         new WrappedGameProfile(UUID.nameUUIDFromBytes(new byte[0]), "Player"));
-    return packet;
-  }
-
-  @Override
-  public PacketContainer createCameraPacket(Player player) {
-    PacketContainer packet = new PacketContainer(PacketType.Play.Server.CAMERA);
-    packet.getIntegers().write(0, player.getEntityId());
     return packet;
   }
 

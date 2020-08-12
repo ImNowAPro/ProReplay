@@ -18,8 +18,6 @@ public interface PacketConverter {
 
   PacketContainer createLoginSuccessPacket(Player player);
 
-  PacketContainer createCameraPacket(Player player);
-
   PacketContainer createLoginPacket(Player player);
 
   PacketContainer createPlayerListItemPacket(Player player);

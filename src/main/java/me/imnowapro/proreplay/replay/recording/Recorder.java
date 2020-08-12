@@ -80,21 +80,8 @@ public class Recorder extends PacketAdapter {
   }
 
   private void savePacket(PacketContainer packet) {
-    if ((packet.getType().equals(PacketType.Play.Server.MAP_CHUNK)
-        || packet.getType().equals(PacketType.Play.Server.MAP_CHUNK_BULK))
-        && this.recordedPackets.size() - 3 < 49) {
-      this.recordedPackets.add(this.recordedChunks + 4,
-          new PacketData(this.recordedChunks + 5, packet));
-      this.recordedChunks++;
-    } else if (packet.getType().equals(PacketType.Login.Server.SUCCESS)
-        || packet.getType().equals(PacketType.Play.Server.LOGIN)
-        || packet.getType().equals(PacketType.Play.Server.PLAYER_INFO)
-        || packet.getType().equals(PacketType.Play.Server.POSITION)) {
-      this.recordedPackets.add(new PacketData(this.recordedPackets.size() + 1, packet));
-    } else {
-      recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime),
-          packet));
-    }
+    recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime),
+        packet));
   }
 
   public Player getRecordedPlayer() {

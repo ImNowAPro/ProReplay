@@ -31,12 +31,6 @@ public class PacketConverter_1_15_R1 implements PacketConverter {
   }
 
   @Override
-  public PacketContainer createCameraPacket(Player player) {
-    // TODO
-    return null;
-  }
-
-  @Override
   public PacketContainer createLoginPacket(Player player) {
     // TODO
     return null;
