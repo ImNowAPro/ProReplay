@@ -9,6 +9,7 @@ import me.imnowapro.proreplay.ProReplay;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public interface PacketConverter {
 
@@ -26,11 +27,13 @@ public interface PacketConverter {
 
   PacketContainer createPositionPacket(Location position);
 
-  PacketContainer convertPositionPacket(Player player, PacketContainer oldPacket);
+  PacketContainer createPositionPacket(Player player, Vector move);
 
-  PacketContainer convertPositionLookPacket(Player player, PacketContainer oldPacket);
+  PacketContainer createPositionLookPacket(Player player, Vector move, float yaw, float pitch);
 
-  PacketContainer convertLookPacket(Player player, PacketContainer oldPacket);
+  PacketContainer createLookPacket(Player player, float yaw, float pitch);
+
+  PacketContainer createHeadRotationPacket(Player player, float yaw);
 
   static Optional<PacketConverter> getConverter() {
     try {

@@ -1,5 +1,6 @@
 package me.imnowapro.proreplay.listener;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import java.io.File;
 import java.io.IOException;
 import me.imnowapro.proreplay.ProReplay;
@@ -17,8 +18,10 @@ public class JoinQuitListener implements Listener {
   public void onLogin(PlayerLoginEvent event) {
     // Test
     Recorder recorder = new Recorder(event.getPlayer());
+    ProtocolLibrary.getProtocolManager().addPacketListener(recorder);
+    Bukkit.getPluginManager().registerEvents(recorder, ProReplay.getInstance());
     recorder.start();
-    Bukkit.getScheduler().runTaskLaterAsynchronously(ProReplay.getInstance(), () -> {
+    Bukkit.getScheduler().runTaskLater(ProReplay.getInstance(), () -> {
       recorder.stop();
       Replay replay = new Replay(recorder);
       ProReplay.getInstance().getDataFolder().mkdirs();

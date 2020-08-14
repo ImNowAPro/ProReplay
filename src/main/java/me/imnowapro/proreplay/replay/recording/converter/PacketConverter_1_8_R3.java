@@ -157,42 +157,45 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
   }
 
   @Override
-  public PacketContainer convertPositionPacket(Player player, PacketContainer oldPacket) {
-    Vector move = new Vector(oldPacket.getDoubles().read(0) - player.getLocation().getX(),
-        oldPacket.getDoubles().read(1) - player.getLocation().getY(),
-        oldPacket.getDoubles().read(2) - player.getLocation().getZ());
+  public PacketContainer createPositionPacket(Player player, Vector move) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE);
     packet.getIntegers().write(0, player.getEntityId());
     packet.getBytes().write(0, PacketUtil.toFixedPointNumber(move.getX()))
         .write(1, PacketUtil.toFixedPointNumber(move.getY()))
         .write(2, PacketUtil.toFixedPointNumber(move.getZ()));
-    packet.getBooleans().write(0, oldPacket.getBooleans().read(0));
+    packet.getBooleans().write(0, player.isOnGround());
     return packet;
   }
 
   @Override
-  public PacketContainer convertPositionLookPacket(Player player, PacketContainer oldPacket) {
-    Vector move = new Vector(oldPacket.getDoubles().read(0) - player.getLocation().getX(),
-        oldPacket.getDoubles().read(1) - player.getLocation().getY(),
-        oldPacket.getDoubles().read(2) - player.getLocation().getZ());
+  public PacketContainer createPositionLookPacket(Player player, Vector move, float yaw,
+                                                  float pitch) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
     packet.getIntegers().write(0, player.getEntityId());
     packet.getBytes().write(0, PacketUtil.toFixedPointNumber(move.getX()))
         .write(1, PacketUtil.toFixedPointNumber(move.getY()))
         .write(2, PacketUtil.toFixedPointNumber(move.getZ()));
-    packet.getBytes().write(3, PacketUtil.toAngle(oldPacket.getFloat().read(0)));
-    packet.getBytes().write(4, PacketUtil.toAngle(oldPacket.getFloat().read(1)));
-    packet.getBooleans().write(0, oldPacket.getBooleans().read(0));
+    packet.getBytes().write(3, PacketUtil.toAngle(yaw));
+    packet.getBytes().write(4, PacketUtil.toAngle(pitch));
+    packet.getBooleans().write(0, player.isOnGround());
     return packet;
   }
 
   @Override
-  public PacketContainer convertLookPacket(Player player, PacketContainer oldPacket) {
+  public PacketContainer createLookPacket(Player player, float yaw, float pitch) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
     packet.getIntegers().write(0, player.getEntityId());
-    packet.getBytes().write(0, PacketUtil.toAngle(oldPacket.getFloat().read(0)));
-    packet.getBytes().write(1, PacketUtil.toAngle(oldPacket.getFloat().read(1)));
-    packet.getBooleans().write(0, oldPacket.getBooleans().read(0));
+    packet.getBytes().write(0, PacketUtil.toAngle(yaw));
+    packet.getBytes().write(1, PacketUtil.toAngle(pitch));
+    packet.getBooleans().write(0, player.isOnGround());
+    return packet;
+  }
+
+  @Override
+  public PacketContainer createHeadRotationPacket(Player player, float yaw) {
+    PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
+    packet.getIntegers().write(0, player.getEntityId());
+    packet.getBytes().write(0, PacketUtil.toAngle(yaw));
     return packet;
   }
 }
