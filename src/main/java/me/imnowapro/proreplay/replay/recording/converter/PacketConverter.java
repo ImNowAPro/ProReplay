@@ -35,6 +35,8 @@ public interface PacketConverter {
 
   PacketContainer createHeadRotationPacket(Player player, float yaw);
 
+  PacketContainer convertAnimationPacket(Player player, PacketContainer oldPacket);
+
   static Optional<PacketConverter> getConverter() {
     try {
       String version = Bukkit.getServer().getClass().getPackage().getName()

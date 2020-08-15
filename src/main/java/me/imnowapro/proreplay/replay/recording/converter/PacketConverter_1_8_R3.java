@@ -198,4 +198,12 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     packet.getBytes().write(0, PacketUtil.toAngle(yaw));
     return packet;
   }
+
+  @Override
+  public PacketContainer convertAnimationPacket(Player player, PacketContainer oldPacket) {
+    PacketContainer packet = new PacketContainer(PacketType.Play.Server.ANIMATION);
+    packet.getIntegers().write(0, player.getEntityId())
+        .write(1, 0);
+    return packet;
+  }
 }

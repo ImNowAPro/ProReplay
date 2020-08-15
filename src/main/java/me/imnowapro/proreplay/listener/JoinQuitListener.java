@@ -31,6 +31,7 @@ public class JoinQuitListener implements Listener {
       } catch (IOException e) {
         e.printStackTrace();
       }
+      recorder.getRecordedPlayer().sendMessage("Finished replay.");
     }, 20 * 10);
   }
 }

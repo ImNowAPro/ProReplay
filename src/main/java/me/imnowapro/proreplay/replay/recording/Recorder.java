@@ -24,7 +24,7 @@ public class Recorder extends PacketAdapter implements Listener {
   private final Player recordedPlayer;
   private boolean recording = false;
   private long startTime = new Date().getTime();
-  private LinkedList<PacketData> recordedPackets = new LinkedList<>();
+  private final LinkedList<PacketData> recordedPackets = new LinkedList<>();
 
   public Recorder(Player recordedPlayer) {
     super(ProReplay.getInstance(), ListenerPriority.LOWEST,
@@ -45,7 +45,8 @@ public class Recorder extends PacketAdapter implements Listener {
   public void onPacketReceiving(PacketEvent event) {
     if (this.recording && event.getPlayer() == this.recordedPlayer) {
       if (event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-        // TODO
+        savePacket(ProReplay.getInstance().getPacketConverter()
+            .convertAnimationPacket(event.getPlayer(), event.getPacket()));
       }
     }
   }
@@ -60,6 +61,10 @@ public class Recorder extends PacketAdapter implements Listener {
   @EventHandler(priority = EventPriority.LOWEST)
   public void onMove(PlayerMoveEvent event) {
     if (this.recording && event.getPlayer() == this.recordedPlayer) {
+      if (event.getFrom().getYaw() != event.getTo().getYaw()) {
+        savePacket(ProReplay.getInstance().getPacketConverter()
+            .createHeadRotationPacket(event.getPlayer(), event.getTo().getYaw()));
+      }
       Vector move = event.getTo().toVector().subtract(event.getFrom().toVector());
       if (move.length() > 0 && (event.getFrom().getYaw() != event.getTo().getYaw()
           || event.getFrom().getPitch() != event.getTo().getPitch())) {
@@ -73,10 +78,6 @@ public class Recorder extends PacketAdapter implements Listener {
       } else if (move.length() > 0) {
         savePacket(ProReplay.getInstance().getPacketConverter()
             .createPositionPacket(event.getPlayer(), move));
-      }
-      if (event.getFrom().getYaw() != event.getTo().getYaw()) {
-        savePacket(ProReplay.getInstance().getPacketConverter()
-            .createHeadRotationPacket(event.getPlayer(), event.getTo().getYaw()));
       }
     }
   }
