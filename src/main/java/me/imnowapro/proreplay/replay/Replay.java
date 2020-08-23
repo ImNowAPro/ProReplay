@@ -1,9 +1,9 @@
 package me.imnowapro.proreplay.replay;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.stream.Collectors;
 import me.imnowapro.proreplay.replay.recording.Recorder;
 
 public class Replay {
@@ -25,8 +25,9 @@ public class Replay {
     this.metaData.put("mcversion", recorder.getVersion());
     this.metaData.put("protocol", recorder.getProtocolVersion());
     this.metaData.put("fileFormatVersion", 14);
-    this.metaData.put("players",
-        Collections.singleton(recorder.getRecordedPlayer().getUniqueId().toString()));
+    this.metaData.put("players", recorder.getPlayers().stream()
+        .map(player -> player.getUniqueId().toString())
+        .collect(Collectors.toSet()));
   }
 
   public Map<String, Object> getMetaData() {

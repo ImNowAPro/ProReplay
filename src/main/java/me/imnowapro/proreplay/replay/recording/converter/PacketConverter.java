@@ -33,6 +33,8 @@ public interface PacketConverter {
 
   PacketContainer createLookPacket(Player player, float yaw, float pitch);
 
+  PacketContainer createTeleportPacket(Player player, Location location);
+
   PacketContainer createHeadRotationPacket(Player player, float yaw);
 
   PacketContainer convertAnimationPacket(Player player, PacketContainer oldPacket);

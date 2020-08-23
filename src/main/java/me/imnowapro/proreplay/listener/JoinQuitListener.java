@@ -10,12 +10,12 @@ import me.imnowapro.proreplay.replay.recording.Recorder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class JoinQuitListener implements Listener {
 
   @EventHandler
-  public void onLogin(PlayerLoginEvent event) {
+  public void onJoin(PlayerJoinEvent event) {
     // Test
     Recorder recorder = new Recorder(event.getPlayer());
     ProtocolLibrary.getProtocolManager().addPacketListener(recorder);
@@ -32,6 +32,6 @@ public class JoinQuitListener implements Listener {
         e.printStackTrace();
       }
       recorder.getRecordedPlayer().sendMessage("Finished replay.");
-    }, 20 * 10);
+    }, 20 * 20);
   }
 }

@@ -1,5 +1,6 @@
 package me.imnowapro.proreplay.replay;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.injector.netty.WirePacket;
 import java.io.Serializable;
@@ -18,6 +19,10 @@ public class PacketData extends WirePacket implements Serializable {
   public PacketData(int time, int id, byte[] data) {
     super(id, data);
     this.time = time;
+  }
+
+  public PacketType getType() {
+    return ProReplay.getInstance().getPacketConverter().getPacketType(getId());
   }
 
   public int getTime() {

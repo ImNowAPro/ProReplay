@@ -131,9 +131,9 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN);
     packet.getIntegers().write(0, player.getEntityId());
     packet.getUUIDs().write(0, player.getUniqueId());
-    packet.getIntegers().write(1, (int) (player.getLocation().getX() * 32))
-        .write(2, (int) (player.getLocation().getY() * 32))
-        .write(3, (int) (player.getLocation().getZ() * 32));
+    packet.getIntegers().write(1, (int) (player.getLocation().getX() * 32D))
+        .write(2, (int) (player.getLocation().getY() * 32D))
+        .write(3, (int) (player.getLocation().getZ() * 32D));
     packet.getBytes().write(0, PacketUtil.toAngle(player.getLocation().getYaw()))
         .write(1, PacketUtil.toAngle(player.getLocation().getPitch()));
     packet.getIntegers().write(4,
@@ -160,9 +160,9 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
   public PacketContainer createPositionPacket(Player player, Vector move) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE);
     packet.getIntegers().write(0, player.getEntityId());
-    packet.getBytes().write(0, PacketUtil.toFixedPointNumber(move.getX()))
-        .write(1, PacketUtil.toFixedPointNumber(move.getY()))
-        .write(2, PacketUtil.toFixedPointNumber(move.getZ()));
+    packet.getBytes().write(0, (byte) PacketUtil.toFixedPointNumber(move.getX()))
+        .write(1, (byte) PacketUtil.toFixedPointNumber(move.getY()))
+        .write(2, (byte) PacketUtil.toFixedPointNumber(move.getZ()));
     packet.getBooleans().write(0, player.isOnGround());
     return packet;
   }
@@ -172,9 +172,9 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
                                                   float pitch) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
     packet.getIntegers().write(0, player.getEntityId());
-    packet.getBytes().write(0, PacketUtil.toFixedPointNumber(move.getX()))
-        .write(1, PacketUtil.toFixedPointNumber(move.getY()))
-        .write(2, PacketUtil.toFixedPointNumber(move.getZ()));
+    packet.getBytes().write(0, (byte) PacketUtil.toFixedPointNumber(move.getX()))
+        .write(1, (byte) PacketUtil.toFixedPointNumber(move.getY()))
+        .write(2, (byte) PacketUtil.toFixedPointNumber(move.getZ()));
     packet.getBytes().write(3, PacketUtil.toAngle(yaw));
     packet.getBytes().write(4, PacketUtil.toAngle(pitch));
     packet.getBooleans().write(0, player.isOnGround());
@@ -187,6 +187,19 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
     packet.getIntegers().write(0, player.getEntityId());
     packet.getBytes().write(0, PacketUtil.toAngle(yaw));
     packet.getBytes().write(1, PacketUtil.toAngle(pitch));
+    packet.getBooleans().write(0, player.isOnGround());
+    return packet;
+  }
+
+  @Override
+  public PacketContainer createTeleportPacket(Player player, Location location) {
+    PacketContainer packet = new PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT);
+    packet.getIntegers().write(0, player.getEntityId())
+        .write(1, PacketUtil.toFixedPointNumber(player.getLocation().getX()))
+        .write(2, PacketUtil.toFixedPointNumber(player.getLocation().getY()))
+        .write(3, PacketUtil.toFixedPointNumber(player.getLocation().getZ()));
+    packet.getBytes().write(0, PacketUtil.toAngle(player.getLocation().getYaw()))
+        .write(1, PacketUtil.toAngle(player.getLocation().getPitch()));
     packet.getBooleans().write(0, player.isOnGround());
     return packet;
   }
