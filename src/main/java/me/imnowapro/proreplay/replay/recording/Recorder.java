@@ -29,7 +29,8 @@ public class Recorder extends PacketAdapter implements Listener {
   private final Player recordedPlayer;
   private final Collection<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
   private boolean recording = false;
-  private long startTime = new Date().getTime();
+  private final long date = new Date().getTime();
+  private long startTime = 0;
   private final LinkedList<PacketData> recordedPackets = new LinkedList<>();
 
   public Recorder(Player recordedPlayer) {
@@ -38,11 +39,10 @@ public class Recorder extends PacketAdapter implements Listener {
             PacketType.Play.Server.REL_ENTITY_MOVE_LOOK, PacketType.Play.Server.ENTITY_LOOK,
             PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
             PacketType.Play.Server.LIGHT_UPDATE, PacketType.Play.Server.WORLD_BORDER,
-            PacketType.Play.Server.SPAWN_POSITION, PacketType.Play.Server.LOOK_AT,
-            PacketType.Play.Server.COMMANDS, PacketType.Play.Server.RECIPES,
-            PacketType.Play.Server.TAGS, PacketType.Play.Server.VIEW_CENTRE,
-            PacketType.Play.Server.UPDATE_TIME, PacketType.Play.Server.COLLECT,
-            PacketType.Play.Server.NAMED_ENTITY_SPAWN,
+            PacketType.Play.Server.WORLD_PARTICLES, PacketType.Play.Server.WORLD_EVENT,
+            PacketType.Play.Server.NAMED_SOUND_EFFECT, PacketType.Play.Server.LOOK_AT,
+            PacketType.Play.Server.VIEW_CENTRE, PacketType.Play.Server.UPDATE_TIME,
+            PacketType.Play.Server.COLLECT, PacketType.Play.Server.NAMED_ENTITY_SPAWN,
             PacketType.Play.Server.SPAWN_ENTITY, PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
             PacketType.Play.Server.SPAWN_ENTITY_LIVING, PacketType.Play.Server.SPAWN_ENTITY_WEATHER,
             PacketType.Play.Server.SPAWN_ENTITY_PAINTING, PacketType.Play.Server.ENTITY,
@@ -51,10 +51,11 @@ public class Recorder extends PacketAdapter implements Listener {
             PacketType.Play.Server.ENTITY_EFFECT, PacketType.Play.Server.REMOVE_ENTITY_EFFECT,
             PacketType.Play.Server.ENTITY_EQUIPMENT, PacketType.Play.Server.EXPLOSION,
             PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.ENTITY_DESTROY,
+            PacketType.Play.Server.ENTITY_SOUND, PacketType.Play.Server.UNLOAD_CHUNK,
             PacketType.Play.Server.MULTI_BLOCK_CHANGE, PacketType.Play.Server.BLOCK_CHANGE,
             PacketType.Play.Server.BLOCK_ACTION, PacketType.Play.Server.BLOCK_ACTION,
-            PacketType.Play.Server.UPDATE_SIGN,
-            PacketType.Play.Server.BLOCK_BREAK_ANIMATION, PacketType.Play.Server.GAME_STATE_CHANGE)
+            PacketType.Play.Server.UPDATE_SIGN, PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
+            PacketType.Play.Server.GAME_STATE_CHANGE)
             .filter(PacketType::isSupported)
             .collect(Collectors.toSet()));
     this.recordedPlayer = recordedPlayer;
@@ -143,11 +144,11 @@ public class Recorder extends PacketAdapter implements Listener {
   }
 
   public Collection<Player> getPlayers() {
-    return players;
+    return this.players;
   }
 
-  public long getStartTime() {
-    return this.startTime;
+  public long getDate() {
+    return this.date;
   }
 
   public LinkedList<PacketData> getRecordedPackets() {

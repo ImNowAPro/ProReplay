@@ -21,7 +21,7 @@ public class Replay {
     this.metaData.put("singleplayer", false);
     this.metaData.put("generator", "ProReplay Generator");
     this.metaData.put("duration", this.packets.getLast().getTime());
-    this.metaData.put("date", recorder.getStartTime());
+    this.metaData.put("date", recorder.getDate());
     this.metaData.put("mcversion", recorder.getVersion());
     this.metaData.put("protocol", recorder.getProtocolVersion());
     this.metaData.put("fileFormatVersion", 14);
