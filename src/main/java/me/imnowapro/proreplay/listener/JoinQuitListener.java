@@ -24,9 +24,8 @@ public class JoinQuitListener implements Listener {
     Bukkit.getScheduler().runTaskLater(ProReplay.getInstance(), () -> {
       recorder.stop();
       Replay replay = new Replay(recorder);
-      ProReplay.getInstance().getDataFolder().mkdirs();
       try {
-        new ReplayWriter(new File(ProReplay.getInstance().getDataFolder(), "test.mcpr"))
+        new ReplayWriter(new File(ProReplay.getInstance().getReplayFolder(), "test.mcpr"))
             .writeAndClose(replay);
       } catch (IOException e) {
         e.printStackTrace();

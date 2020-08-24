@@ -1,0 +1,9 @@
+# Your server name, it will be displayed in the ReplayMod
+serverName: Example.net
+
+# Recording options
+record:
+  chat: true
+  scoreboard: true
+  title: false
+  actionbar: false

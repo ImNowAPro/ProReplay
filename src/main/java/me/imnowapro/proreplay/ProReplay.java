@@ -2,6 +2,7 @@ package me.imnowapro.proreplay;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
 import me.imnowapro.proreplay.listener.JoinQuitListener;
 import me.imnowapro.proreplay.replay.recording.converter.PacketConverter;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ public class ProReplay extends JavaPlugin implements Listener {
       .create();
   private static ProReplay instance = null;
 
+  private File replayFolder;
   private PacketConverter packetConverter;
 
   @Override
@@ -28,19 +30,8 @@ public class ProReplay extends JavaPlugin implements Listener {
       Bukkit.getPluginManager().disablePlugin(this);
       return;
     }
-    /*try {
-      new ReplayReader(new File(getDataFolder(), "rewi.mcpr"))
-          .readAndClose().getPackets().forEach(packet -> {
-        PacketType type = packetConverter.getPacketType(packet.getId());
-        if (type != null) {
-          getLogger().info("0x" + Integer.toHexString(packet.getId()) + " "
-              + (type.getPacketClass() != null ? type.getPacketClass().getSimpleName() : "") + " "
-              + type.name());
-        }
-      });
-    } catch (IOException e) {
-      e.printStackTrace();
-    }*/
+    this.replayFolder = new File(getDataFolder().getPath() + "\\replays\\");
+    loadConfig();
     registerListener();
     getLogger().info("Successfully loaded ProReplay.");
   }
@@ -50,12 +41,24 @@ public class ProReplay extends JavaPlugin implements Listener {
     getLogger().info("Successfully unloaded ProReplay.");
   }
 
+  public void loadConfig() {
+    saveDefaultConfig();
+    getConfig().options().copyDefaults(true);
+  }
+
   private void registerListener() {
     Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
   }
 
   public PacketConverter getPacketConverter() {
-    return packetConverter;
+    return this.packetConverter;
+  }
+
+  public File getReplayFolder() {
+    if (!this.replayFolder.exists()) {
+      this.replayFolder.mkdirs();
+    }
+    return this.replayFolder;
   }
 
   public static ProReplay getInstance() {
