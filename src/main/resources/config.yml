@@ -1,7 +1,7 @@
 # Your server name, it will be displayed in the ReplayMod
 serverName: Example.net
 
-# If true, some memory will be saved, but may lead to lags.
+# If true, some memory will be saved, but may lead to lags
 writeDirectly: false
 
 # Recording options

@@ -16,8 +16,8 @@ public class ProReplay extends JavaPlugin implements Listener {
       .create();
   private static ProReplay instance = null;
 
-  private File replayFolder;
   private PacketConverter packetConverter;
+  private File replayFolder;
 
   @Override
   public void onEnable() {
@@ -42,8 +42,14 @@ public class ProReplay extends JavaPlugin implements Listener {
   }
 
   public void loadConfig() {
-    saveDefaultConfig();
+    saveResource("config.yml", true);
     getConfig().options().copyDefaults(true);
+    getConfig().addDefault("serverName", "Example.net");
+    getConfig().addDefault("writeDirectly", false);
+    getConfig().addDefault("record.chat", true);
+    getConfig().addDefault("record.scoreboard", true);
+    getConfig().addDefault("record.title", false);
+    saveConfig();
   }
 
   private void registerListener() {
