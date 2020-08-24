@@ -6,4 +6,3 @@ record:
   chat: true
   scoreboard: true
   title: false
-  actionbar: false
