@@ -6,14 +6,16 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import java.util.Collection;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.logging.Level;
 import me.imnowapro.proreplay.ProReplay;
+import me.imnowapro.proreplay.file.ReplayWriter;
 import me.imnowapro.proreplay.replay.PacketData;
+import me.imnowapro.proreplay.replay.ReplayMeta;
 import me.imnowapro.proreplay.replay.recording.converter.PacketConverter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,16 +27,32 @@ import org.bukkit.util.Vector;
 
 public class Recorder extends PacketAdapter implements Listener {
 
+  private final String name;
+  private final ReplayMeta meta;
   private final Player recordedPlayer;
-  private final Collection<Player> players = new HashSet<>(Bukkit.getOnlinePlayers());
   private boolean recording = false;
-  private final long date = new Date().getTime();
   private long startTime = 0;
-  private final LinkedList<PacketData> recordedPackets = new LinkedList<>();
 
-  public Recorder(Player recordedPlayer) {
+  private final boolean writeDirectly;
+  private ReplayWriter writer;
+  private LinkedList<PacketData> recordedPackets = new LinkedList<>();
+
+  public Recorder(String name, Player recordedPlayer, boolean writeDirectly) {
     super(ProReplay.getInstance(), ListenerPriority.MONITOR, PacketConverter.getPacketTypes());
+    this.name = name;
+    this.meta = new ReplayMeta(0,
+        new Date().getTime(),
+        ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion(),
+        ProtocolLibrary.getProtocolManager().getProtocolVersion(recordedPlayer));
+    this.meta.getPlayers().add(recordedPlayer.getUniqueId().toString());
     this.recordedPlayer = recordedPlayer;
+    this.writeDirectly = writeDirectly;
+    try {
+      this.writer = new ReplayWriter(new File(ProReplay.getInstance().getReplayFolder(),
+          name + ".mcpr"));
+    } catch (IOException e) {
+      ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to create ReplayWriter.", e);
+    }
   }
 
   @Override
@@ -56,7 +74,7 @@ public class Recorder extends PacketAdapter implements Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent event) {
-    this.players.add(event.getPlayer());
+    this.meta.getPlayers().add(event.getPlayer().getUniqueId().toString());
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -108,34 +126,42 @@ public class Recorder extends PacketAdapter implements Listener {
 
   public void stop() {
     this.recording = false;
+    this.meta.setDuration(System.currentTimeMillis() - this.startTime);
+    try {
+      if (!this.writeDirectly) {
+        for (PacketData packetData : this.recordedPackets) {
+          this.writer.writePacket(packetData);
+        }
+      }
+      this.writer.writeMetaAndClose(this.meta);
+    } catch (IOException e) {
+      ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to write replay.", e);
+    }
   }
 
   private void savePacket(PacketContainer packet) {
-    recordedPackets.add(new PacketData((int) (System.currentTimeMillis() - this.startTime),
-        packet));
+    PacketData packetData = new PacketData((int) (System.currentTimeMillis() - this.startTime),
+        packet);
+    if (this.writeDirectly) {
+      try {
+        this.writer.writePacket(packetData);
+      } catch (IOException e) {
+        ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to write packet.", e);
+      }
+    } else {
+      this.recordedPackets.add(packetData);
+    }
+  }
+
+  public ReplayMeta getMeta() {
+    return this.meta;
   }
 
   public Player getRecordedPlayer() {
     return this.recordedPlayer;
   }
 
-  public Collection<Player> getPlayers() {
-    return this.players;
-  }
-
-  public long getDate() {
-    return this.date;
-  }
-
   public LinkedList<PacketData> getRecordedPackets() {
     return this.recordedPackets;
-  }
-
-  public String getVersion() {
-    return ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion();
-  }
-
-  public int getProtocolVersion() {
-    return ProtocolLibrary.getProtocolManager().getProtocolVersion(this.recordedPlayer);
   }
 }

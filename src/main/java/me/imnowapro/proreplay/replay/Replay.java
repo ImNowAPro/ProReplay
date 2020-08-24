@@ -1,37 +1,24 @@
 package me.imnowapro.proreplay.replay;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.stream.Collectors;
 import me.imnowapro.proreplay.replay.recording.Recorder;
 
 public class Replay {
 
-  private final Map<String, Object> metaData;
+  private final ReplayMeta meta;
   private final LinkedList<PacketData> packets;
 
-  public Replay(Map<String, Object> metaData, LinkedList<PacketData> packets) {
-    this.metaData = metaData;
+  public Replay(ReplayMeta meta, LinkedList<PacketData> packets) {
+    this.meta = meta;
     this.packets = packets;
   }
 
   public Replay(Recorder recorder) {
-    this(new HashMap<>(), recorder.getRecordedPackets());
-    this.metaData.put("singleplayer", false);
-    this.metaData.put("generator", "ProReplay Generator");
-    this.metaData.put("duration", this.packets.getLast().getTime());
-    this.metaData.put("date", recorder.getDate());
-    this.metaData.put("mcversion", recorder.getVersion());
-    this.metaData.put("protocol", recorder.getProtocolVersion());
-    this.metaData.put("fileFormatVersion", 14);
-    this.metaData.put("players", recorder.getPlayers().stream()
-        .map(player -> player.getUniqueId().toString())
-        .collect(Collectors.toSet()));
+    this(recorder.getMeta(), recorder.getRecordedPackets());
   }
 
-  public Map<String, Object> getMetaData() {
-    return this.metaData;
+  public ReplayMeta getMeta() {
+    return this.meta;
   }
 
   public LinkedList<PacketData> getPackets() {

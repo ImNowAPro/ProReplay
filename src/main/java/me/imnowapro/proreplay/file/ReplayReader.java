@@ -1,20 +1,17 @@
 package me.imnowapro.proreplay.file;
 
-import com.google.gson.stream.JsonReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import me.imnowapro.proreplay.ProReplay;
 import me.imnowapro.proreplay.replay.PacketData;
 import me.imnowapro.proreplay.replay.Replay;
+import me.imnowapro.proreplay.replay.ReplayMeta;
 import me.imnowapro.proreplay.replay.recording.PacketUtil;
 
 public class ReplayReader {
@@ -25,8 +22,26 @@ public class ReplayReader {
     this.inputStream = new ZipInputStream(new FileInputStream(file));
   }
 
-  public Replay readAndClose() throws IOException {
-    Map<String, Object> metaData = new HashMap<>();
+  public ReplayMeta readMetaAndClose() throws IOException {
+    ZipEntry entry;
+    while ((entry = this.inputStream.getNextEntry()) != null) {
+      ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+      while (this.inputStream.available() == 1) {
+        byteArrayStream.write(this.inputStream.read());
+      }
+      if (entry.getName().equals("metaData.json")) {
+        ReplayMeta meta = ProReplay.GSON.fromJson(new String(byteArrayStream.toByteArray()),
+            ReplayMeta.class);
+        this.inputStream.close();
+        return meta;
+      }
+    }
+    close();
+    return null;
+  }
+
+  public Replay readReplayAndClose() throws IOException {
+    ReplayMeta meta = null;
     LinkedList<PacketData> packets = new LinkedList<>();
     ZipEntry entry;
     while ((entry = this.inputStream.getNextEntry()) != null) {
@@ -35,7 +50,6 @@ public class ReplayReader {
         byteArrayStream.write(this.inputStream.read());
       }
       ByteBuffer buffer = ByteBuffer.wrap(byteArrayStream.toByteArray());
-
       if (entry.getName().equals("recording.tmcpr")) {
         while (buffer.remaining() >= Integer.BYTES * 2) {
           int time = buffer.getInt();
@@ -48,14 +62,16 @@ public class ReplayReader {
           }
         }
       } else if (entry.getName().equals("metaData.json")) {
-        JsonReader jsonReader = new JsonReader(new StringReader(new String(buffer.array())));
-        jsonReader.setLenient(false);
-        metaData = ProReplay.GSON.fromJson(jsonReader, Map.class);
+        meta = ProReplay.GSON.fromJson(new String(buffer.array()), ReplayMeta.class);
       }
       this.inputStream.closeEntry();
     }
+    close();
+    return new Replay(meta, packets);
+  }
+
+  public void close() throws IOException {
     this.inputStream.close();
-    return new Replay(metaData, packets);
   }
 
   private static int readVarInt(ByteBuffer buffer) {

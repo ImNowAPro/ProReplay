@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -64,7 +65,7 @@ public interface PacketConverter {
   }
 
   static Set<PacketType> getPacketTypes(boolean chat, boolean scoreboard, boolean title) {
-    Collection<PacketType> types = Arrays.asList(PacketType.Play.Client.ARM_ANIMATION,
+    Collection<PacketType> types = new HashSet<>(Arrays.asList(PacketType.Play.Client.ARM_ANIMATION,
         PacketType.Play.Server.REL_ENTITY_MOVE,
         PacketType.Play.Server.REL_ENTITY_MOVE_LOOK, PacketType.Play.Server.ENTITY_LOOK,
         PacketType.Play.Server.MAP_CHUNK, PacketType.Play.Server.MAP_CHUNK_BULK,
@@ -84,7 +85,7 @@ public interface PacketConverter {
         PacketType.Play.Server.ENTITY_SOUND, PacketType.Play.Server.UNLOAD_CHUNK,
         PacketType.Play.Server.MULTI_BLOCK_CHANGE, PacketType.Play.Server.BLOCK_CHANGE,
         PacketType.Play.Server.BLOCK_ACTION, PacketType.Play.Server.UPDATE_SIGN,
-        PacketType.Play.Server.BLOCK_BREAK_ANIMATION, PacketType.Play.Server.GAME_STATE_CHANGE);
+        PacketType.Play.Server.BLOCK_BREAK_ANIMATION, PacketType.Play.Server.GAME_STATE_CHANGE));
     if (chat) {
       types.add(PacketType.Play.Server.CHAT);
     }
