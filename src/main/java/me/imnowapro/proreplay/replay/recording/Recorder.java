@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
@@ -75,6 +76,14 @@ public class Recorder extends PacketAdapter implements Listener {
   @EventHandler(priority = EventPriority.MONITOR)
   public void onJoin(PlayerJoinEvent event) {
     this.meta.getPlayers().add(event.getPlayer().getUniqueId().toString());
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onRespawn(PlayerRespawnEvent event) {
+    if (this.recording && event.getPlayer() == this.recordedPlayer) {
+      savePacket(ProReplay.getInstance().getPacketConverter()
+          .createPlayerSpawnPacket(event.getPlayer()));
+    }
   }
 
   @EventHandler(priority = EventPriority.MONITOR)

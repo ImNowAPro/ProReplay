@@ -42,7 +42,7 @@ public class ProReplay extends JavaPlugin implements Listener {
   }
 
   public void loadConfig() {
-    saveResource("config.yml", true);
+    saveDefaultConfig();
     getConfig().options().copyDefaults(true);
     getConfig().addDefault("serverName", "Example.net");
     getConfig().addDefault("writeDirectly", false);

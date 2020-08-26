@@ -22,6 +22,6 @@ public class JoinQuitListener implements Listener {
     Bukkit.getScheduler().runTaskLater(ProReplay.getInstance(), () -> {
       recorder.stop();
       recorder.getRecordedPlayer().sendMessage("Finished replay.");
-    }, 20 * 20);
+    }, 20 * 10);
   }
 }
