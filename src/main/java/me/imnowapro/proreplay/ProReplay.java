@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
 import me.imnowapro.proreplay.listener.JoinQuitListener;
-import me.imnowapro.proreplay.replay.recording.converter.PacketConverter;
+import me.imnowapro.proreplay.replay.converter.PacketConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;

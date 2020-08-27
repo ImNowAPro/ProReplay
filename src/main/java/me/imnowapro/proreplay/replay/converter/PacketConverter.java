@@ -1,4 +1,4 @@
-package me.imnowapro.proreplay.replay.recording.converter;
+package me.imnowapro.proreplay.replay.converter;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -29,6 +29,8 @@ public interface PacketConverter {
   PacketContainer createPlayerListItemPacket(Player player);
 
   PacketContainer createPlayerSpawnPacket(Player player);
+
+  PacketContainer createPlayerSpawnPacket(Player player, Location location);
 
   PacketContainer createPositionPacket(Location position);
 

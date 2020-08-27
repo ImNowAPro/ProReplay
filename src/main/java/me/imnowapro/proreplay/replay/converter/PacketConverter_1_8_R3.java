@@ -1,4 +1,4 @@
-package me.imnowapro.proreplay.replay.recording.converter;
+package me.imnowapro.proreplay.replay.converter;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -128,12 +128,17 @@ public class PacketConverter_1_8_R3 implements PacketConverter {
 
   @Override
   public PacketContainer createPlayerSpawnPacket(Player player) {
+    return createPlayerSpawnPacket(player, player.getLocation());
+  }
+
+  @Override
+  public PacketContainer createPlayerSpawnPacket(Player player, Location location) {
     PacketContainer packet = new PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN);
     packet.getIntegers().write(0, player.getEntityId());
     packet.getUUIDs().write(0, player.getUniqueId());
-    packet.getIntegers().write(1, (int) (player.getLocation().getX() * 32D))
-        .write(2, (int) (player.getLocation().getY() * 32D))
-        .write(3, (int) (player.getLocation().getZ() * 32D));
+    packet.getIntegers().write(1, PacketUtil.toFixedPointNumber(location.getX()))
+        .write(2, PacketUtil.toFixedPointNumber(location.getY()))
+        .write(3, PacketUtil.toFixedPointNumber(location.getZ()));
     packet.getBytes().write(0, PacketUtil.toAngle(player.getLocation().getYaw()))
         .write(1, PacketUtil.toAngle(player.getLocation().getPitch()));
     packet.getIntegers().write(4,

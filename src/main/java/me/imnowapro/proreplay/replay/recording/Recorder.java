@@ -15,7 +15,7 @@ import me.imnowapro.proreplay.ProReplay;
 import me.imnowapro.proreplay.file.ReplayWriter;
 import me.imnowapro.proreplay.replay.PacketData;
 import me.imnowapro.proreplay.replay.ReplayMeta;
-import me.imnowapro.proreplay.replay.recording.converter.PacketConverter;
+import me.imnowapro.proreplay.replay.converter.PacketConverter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -82,7 +82,7 @@ public class Recorder extends PacketAdapter implements Listener {
   public void onRespawn(PlayerRespawnEvent event) {
     if (this.recording && event.getPlayer() == this.recordedPlayer) {
       savePacket(ProReplay.getInstance().getPacketConverter()
-          .createPlayerSpawnPacket(event.getPlayer()));
+          .createPlayerSpawnPacket(event.getPlayer(), event.getRespawnLocation()));
     }
   }
 
