@@ -31,9 +31,9 @@ public class Recorder extends PacketAdapter implements Listener {
   private final String name;
   private final ReplayMeta meta;
   private final Player recordedPlayer;
-  private boolean recording = false;
   private long startTime = 0;
 
+  private boolean recording = false;
   private final boolean writeDirectly;
   private ReplayWriter writer;
   private LinkedList<PacketData> recordedPackets = new LinkedList<>();

@@ -18,6 +18,13 @@ public class Replay {
     this(recorder.getMeta(), recorder.getRecordedPackets());
   }
 
+  public PacketData getPacket(int index) {
+    if (index >= 0 && index < this.packets.size()) {
+      return this.packets.get(index);
+    }
+    return null;
+  }
+
   public ReplayMeta getMeta() {
     return this.meta;
   }
