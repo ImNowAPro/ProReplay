@@ -29,10 +29,6 @@ public class Replay {
     return this.meta;
   }
 
-  public LinkedList<PacketData> getPackets() {
-    return this.packets;
-  }
-
   public static String getRandomName() {
     return getRandomName(12);
   }

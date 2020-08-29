@@ -2,6 +2,7 @@ package me.imnowapro.proreplay.util;
 
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,11 @@ public class ItemStackBuilder {
 
   public ItemStackBuilder setDisplayName(String displayName) {
     this.itemMeta.setDisplayName(displayName);
+    return this;
+  }
+
+  public ItemStackBuilder setDyeColor(DyeColor color) {
+    this.itemStack.setDurability(color.getData());
     return this;
   }
 
