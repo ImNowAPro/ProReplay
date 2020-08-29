@@ -1,32 +1,28 @@
 package me.imnowapro.proreplay.listener;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import java.io.File;
-import java.io.IOException;
 import me.imnowapro.proreplay.ProReplay;
-import me.imnowapro.proreplay.file.ReplayReader;
-import me.imnowapro.proreplay.replay.replaying.Replayer;
+import me.imnowapro.proreplay.replay.Replay;
+import me.imnowapro.proreplay.replay.recording.Recorder;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class JoinQuitListener implements Listener {
 
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
     // Test
-    /*Recorder recorder = new Recorder("test",
+    Recorder recorder = new Recorder(Replay.getRandomName(6),
         event.getPlayer(),
         ProReplay.getInstance().getConfig().getBoolean("writeDirectly"));
+    ProReplay.getInstance().getRecorder().put(event.getPlayer(), recorder);
     ProtocolLibrary.getProtocolManager().addPacketListener(recorder);
     Bukkit.getPluginManager().registerEvents(recorder, ProReplay.getInstance());
     recorder.start();
-    Bukkit.getScheduler().runTaskLater(ProReplay.getInstance(), () -> {
-      recorder.stop();
-      recorder.getRecordedPlayer().sendMessage("Finished replay.");
-    }, 20 * 10);*/
-    try {
+    /*try {
       ReplayReader reader = new ReplayReader(new File(ProReplay.getInstance().getReplayFolder(),
           "test.mcpr"));
       Replayer replayer = new Replayer(reader.readReplayAndClose(), event.getPlayer());
@@ -36,6 +32,14 @@ public class JoinQuitListener implements Listener {
       replayer.start();
     } catch (IOException e) {
       e.printStackTrace();
+    }*/
+  }
+
+  @EventHandler
+  public void onQuit(PlayerQuitEvent event) {
+    if (ProReplay.getInstance().getRecorder().containsKey(event.getPlayer())) {
+      ProReplay.getInstance().getRecorder().get(event.getPlayer()).stop();
+      ProReplay.getInstance().getRecorder().remove(event.getPlayer());
     }
   }
 }

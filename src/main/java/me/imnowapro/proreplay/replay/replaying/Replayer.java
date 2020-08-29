@@ -126,6 +126,7 @@ public class Replayer extends PacketAdapter implements Listener, Runnable {
     updateXPBar();
   }
 
+  // Not stable
   public void reset() {
     this.currentPacket = 3;
     this.currentTick = 1;
