@@ -29,11 +29,11 @@ import org.bukkit.inventory.ItemStack;
 public class Replayer extends PacketAdapter implements Listener, Runnable {
 
   private final Replay replay;
-  private Player replayingPlayer;
+  private Player watcher;
 
   private boolean replaying = false;
   private boolean slow = false;
-  private int currentTick = 1;
+  private double currentTick = 1.0;
   private int currentPacket = 2;
 
   public Replayer(Replay replay, Player replayingPlayer) {
@@ -41,26 +41,26 @@ public class Replayer extends PacketAdapter implements Listener, Runnable {
         ListenerPriority.LOWEST,
         PacketConverter.getPacketTypes(true, true, true));
     this.replay = replay;
-    setReplayingPlayer(replayingPlayer);
+    setWatcher(replayingPlayer);
   }
 
   @Override
   public void run() {
     if (this.replaying) {
-      onTick(this.currentTick);
+      executeTick(this.currentTick);
       if (this.currentTick < getDurationTicks()) {
         if (this.currentTick % 20 == 0) {
-          updateBar();
+          updateXPBar();
         }
-        this.currentTick++;
+        this.currentTick += (this.slow ? 0.5 : 1.0);
         if (this.currentTick == getDurationTicks()) {
-          updateBar();
+          updateXPBar();
         }
       }
     }
   }
 
-  private void onTick(int tick) {
+  private void executeTick(double tick) {
     PacketData packet;
     while ((packet = this.replay.getPacket(this.currentPacket)) != null
         && packet.getTime() <= tick * 50) {
@@ -107,60 +107,64 @@ public class Replayer extends PacketAdapter implements Listener, Runnable {
         this.replaying = !this.replaying;
       } else if (item.getItemMeta().getDisplayName().endsWith("Skip")) {
         skip(60);
+      } else if (item.getItemMeta().getDisplayName().endsWith("Slow")) {
+        this.slow = !this.slow;
       }
     }
   }
 
   public void start() {
     this.replaying = true;
-    updateBar();
   }
 
   public void skip(int ticks) {
-    ticks = Math.min(getDurationTicks() - this.currentTick, ticks);
+    ticks = Math.min((int) Math.round(getDurationTicks() - this.currentTick), ticks);
     if (ticks > 0) {
-      onTick(this.currentTick + ticks);
+      executeTick(this.currentTick + ticks);
       this.currentTick += ticks;
     }
-    updateBar();
+    updateXPBar();
   }
 
   public void reset() {
     this.currentPacket = 3;
     this.currentTick = 1;
-    updateBar();
+    updateXPBar();
   }
 
-  private void updateBar() {
+  private void updateXPBar() {
     Bukkit.getOnlinePlayers().forEach(player -> {
-      player.setLevel(Math.round(((float) this.currentTick) / 20));
-      player.setExp(((float) this.currentTick) / getDurationTicks());
+      player.setLevel((int) Math.round(this.currentTick / 20));
+      player.setExp((float) (this.currentTick / getDurationTicks()));
     });
   }
 
-  private int getDurationTicks() {
-    return (int) Math.ceil(((float) this.replay.getMeta().getDuration()) / 50);
+  private double getDurationTicks() {
+    return Math.ceil(((float) this.replay.getMeta().getDuration()) / 50);
   }
 
-  public void setReplayingPlayer(Player replayingPlayer) {
-    if (this.replayingPlayer != null && this.replayingPlayer.isOnline()) {
-      this.replayingPlayer.getInventory().clear();
+  public void setWatcher(Player watcher) {
+    if (this.watcher != null && this.watcher.isOnline()) {
+      this.watcher.getInventory().clear();
     }
-    this.replayingPlayer = replayingPlayer;
-    replayingPlayer.getPlayer().setGameMode(GameMode.ADVENTURE);
-    replayingPlayer.getPlayer().setAllowFlight(true);
-    replayingPlayer.getInventory().clear();
-    replayingPlayer.getInventory().setItem(3, new ItemStackBuilder(Material.STAINED_CLAY)
+    this.watcher = watcher;
+    watcher.getPlayer().setGameMode(GameMode.ADVENTURE);
+    watcher.getPlayer().setAllowFlight(true);
+    watcher.getInventory().clear();
+    watcher.getInventory().setItem(3, new ItemStackBuilder(Material.STAINED_CLAY)
         .setDisplayName(ChatColor.RED + "Backwards")
         .setDyeColor(DyeColor.RED)
         .build());
-    replayingPlayer.getInventory().setItem(4, new ItemStackBuilder(Material.STAINED_CLAY)
+    watcher.getInventory().setItem(4, new ItemStackBuilder(Material.STAINED_CLAY)
         .setDisplayName(ChatColor.GOLD + "Pause/Play")
         .setDyeColor(DyeColor.ORANGE)
         .build());
-    replayingPlayer.getInventory().setItem(5, new ItemStackBuilder(Material.STAINED_CLAY)
+    watcher.getInventory().setItem(5, new ItemStackBuilder(Material.STAINED_CLAY)
         .setDisplayName(ChatColor.GREEN + "Forward")
         .setDyeColor(DyeColor.GREEN)
+        .build());
+    watcher.getInventory().setItem(7, new ItemStackBuilder(Material.SLIME_BALL)
+        .setDisplayName(ChatColor.BLUE + "Slow")
         .build());
   }
 }
