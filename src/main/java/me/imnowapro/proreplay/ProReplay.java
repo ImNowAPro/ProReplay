@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
+import me.imnowapro.proreplay.command.ReplayCommand;
 import me.imnowapro.proreplay.file.ReplayReader;
 import me.imnowapro.proreplay.listener.JoinQuitListener;
 import me.imnowapro.proreplay.replay.ReplayMeta;
@@ -21,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ProReplay extends JavaPlugin implements Listener {
 
+  public static final String PREFIX = "§9§lProReplay §r§8» §r";
   public static Gson GSON = new GsonBuilder()
       .setPrettyPrinting()
       .create();
@@ -51,6 +53,7 @@ public class ProReplay extends JavaPlugin implements Listener {
       getLogger().log(Level.WARNING, "Failed to load replays.", e);
     }
     registerListener();
+    registerCommands();
     getLogger().info("Successfully loaded ProReplay.");
   }
 
@@ -81,6 +84,10 @@ public class ProReplay extends JavaPlugin implements Listener {
 
   private void registerListener() {
     Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
+  }
+
+  private void registerCommands() {
+    getCommand("replay").setExecutor(new ReplayCommand());
   }
 
   public PacketConverter getPacketConverter() {
