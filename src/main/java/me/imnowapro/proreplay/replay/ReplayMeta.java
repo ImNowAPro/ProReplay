@@ -1,11 +1,14 @@
 package me.imnowapro.proreplay.replay;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import me.imnowapro.proreplay.ProReplay;
 
 public class ReplayMeta implements Serializable {
 
+  private transient String name;
   private final boolean singleplayer = false;
   private final String generator = "ProReplay Generator";
   private long duration;
@@ -15,11 +18,24 @@ public class ReplayMeta implements Serializable {
   private final int fileFormatVersion = 14;
   private final Collection<String> players = new HashSet<>();
 
-  public ReplayMeta(long duration, long date, String mcversion, int protocol) {
+  public ReplayMeta(String name, long duration, long date, String mcversion, int protocol) {
+    this.name = name;
     this.duration = duration;
     this.date = date;
     this.mcversion = mcversion;
     this.protocol = protocol;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public File getFile() {
+    return new File(ProReplay.getInstance().getReplayFolder(), this.name + ".mcpr");
   }
 
   public boolean isSingleplayer() {

@@ -3,9 +3,15 @@ package me.imnowapro.proreplay;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.logging.Level;
+import me.imnowapro.proreplay.file.ReplayReader;
 import me.imnowapro.proreplay.listener.JoinQuitListener;
+import me.imnowapro.proreplay.replay.ReplayMeta;
 import me.imnowapro.proreplay.replay.converter.PacketConverter;
 import me.imnowapro.proreplay.replay.recording.Recorder;
 import org.bukkit.Bukkit;
@@ -23,6 +29,7 @@ public class ProReplay extends JavaPlugin implements Listener {
   private PacketConverter packetConverter;
   private File replayFolder;
 
+  private final Collection<ReplayMeta> replays = new HashSet<>();
   private final Map<Player, Recorder> recorder = new HashMap<>();
 
   @Override
@@ -38,6 +45,11 @@ public class ProReplay extends JavaPlugin implements Listener {
     }
     this.replayFolder = new File(getDataFolder().getPath() + "\\replays\\");
     loadConfig();
+    try {
+      loadReplays();
+    } catch (IOException e) {
+      getLogger().log(Level.WARNING, "Failed to load replays.", e);
+    }
     registerListener();
     getLogger().info("Successfully loaded ProReplay.");
   }
@@ -58,6 +70,15 @@ public class ProReplay extends JavaPlugin implements Listener {
     saveConfig();
   }
 
+  public void loadReplays() throws IOException {
+    this.replays.clear();
+    if (this.replayFolder.isDirectory()) {
+      for (File file : this.replayFolder.listFiles((dir, name) -> name.endsWith(".mcpr"))) {
+        this.replays.add(new ReplayReader(file).readMetaAndClose());
+      }
+    }
+  }
+
   private void registerListener() {
     Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
   }
@@ -71,6 +92,10 @@ public class ProReplay extends JavaPlugin implements Listener {
       this.replayFolder.mkdirs();
     }
     return this.replayFolder;
+  }
+
+  public Collection<ReplayMeta> getReplays() {
+    return this.replays;
   }
 
   public Map<Player, Recorder> getRecorder() {

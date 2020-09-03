@@ -1,10 +1,8 @@
 package me.imnowapro.proreplay.listener;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import me.imnowapro.proreplay.ProReplay;
 import me.imnowapro.proreplay.replay.Replay;
 import me.imnowapro.proreplay.replay.recording.Recorder;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -14,13 +12,10 @@ public class JoinQuitListener implements Listener {
 
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
-    // Test
-    Recorder recorder = new Recorder(Replay.getRandomName(6),
+    Recorder recorder = new Recorder(event.getPlayer().getName() + "_" + Replay.getRandomName(6),
         event.getPlayer(),
         ProReplay.getInstance().getConfig().getBoolean("writeDirectly"));
     ProReplay.getInstance().getRecorder().put(event.getPlayer(), recorder);
-    ProtocolLibrary.getProtocolManager().addPacketListener(recorder);
-    Bukkit.getPluginManager().registerEvents(recorder, ProReplay.getInstance());
     recorder.start();
     /*try {
       ReplayReader reader = new ReplayReader(new File(ProReplay.getInstance().getReplayFolder(),

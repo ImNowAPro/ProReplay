@@ -16,9 +16,11 @@ import me.imnowapro.proreplay.file.ReplayWriter;
 import me.imnowapro.proreplay.replay.PacketData;
 import me.imnowapro.proreplay.replay.ReplayMeta;
 import me.imnowapro.proreplay.replay.converter.PacketConverter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -28,7 +30,6 @@ import org.bukkit.util.Vector;
 
 public class Recorder extends PacketAdapter implements Listener {
 
-  private final String name;
   private final ReplayMeta meta;
   private final Player recordedPlayer;
   private long startTime = 0;
@@ -40,9 +41,8 @@ public class Recorder extends PacketAdapter implements Listener {
 
   public Recorder(String name, Player recordedPlayer, boolean writeDirectly) {
     super(ProReplay.getInstance(), ListenerPriority.MONITOR, PacketConverter.getPacketTypes());
-    this.name = name;
-    this.meta = new ReplayMeta(0,
-        new Date().getTime(),
+    this.meta = new ReplayMeta(name,
+        0, new Date().getTime(),
         ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion(),
         ProtocolLibrary.getProtocolManager().getProtocolVersion(recordedPlayer));
     this.meta.getPlayers().add(recordedPlayer.getUniqueId().toString());
@@ -54,6 +54,9 @@ public class Recorder extends PacketAdapter implements Listener {
     } catch (IOException e) {
       ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to create ReplayWriter.", e);
     }
+    ProReplay.getInstance().getRecorder().put(recordedPlayer, this);
+    ProtocolLibrary.getProtocolManager().addPacketListener(this);
+    Bukkit.getPluginManager().registerEvents(this, ProReplay.getInstance());
   }
 
   @Override
@@ -146,6 +149,8 @@ public class Recorder extends PacketAdapter implements Listener {
     } catch (IOException e) {
       ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to write replay.", e);
     }
+    HandlerList.unregisterAll(this);
+    ProtocolLibrary.getProtocolManager().removePacketListener(this);
   }
 
   private void savePacket(PacketContainer packet) {

@@ -18,9 +18,11 @@ import me.imnowapro.proreplay.replay.recording.PacketUtil;
 
 public class ReplayReader {
 
+  private final String name;
   private final ZipInputStream inputStream;
 
   public ReplayReader(File file) throws IOException {
+    this.name = file.getName().substring(0, file.getName().length() - 5);
     this.inputStream = new ZipInputStream(new FileInputStream(file));
   }
 
@@ -35,6 +37,7 @@ public class ReplayReader {
         JsonReader reader = new JsonReader(new StringReader(new String(byteArray.toByteArray())));
         reader.setLenient(true);
         ReplayMeta meta = ProReplay.GSON.fromJson(reader, ReplayMeta.class);
+        meta.setName(this.name);
         close();
         return meta;
       }
@@ -68,6 +71,7 @@ public class ReplayReader {
         JsonReader reader = new JsonReader(new StringReader(new String(buffer.array())));
         reader.setLenient(true);
         meta = ProReplay.GSON.fromJson(reader, ReplayMeta.class);
+        meta.setName(this.name);
       }
       this.inputStream.closeEntry();
     }
