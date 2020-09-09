@@ -54,7 +54,7 @@ public class Recorder extends PacketAdapter implements Listener {
     } catch (IOException e) {
       ProReplay.getInstance().getLogger().log(Level.WARNING, "Failed to create ReplayWriter.", e);
     }
-    ProReplay.getInstance().getRecorder().put(recordedPlayer, this);
+    ProReplay.getInstance().getRecorders().put(recordedPlayer, this);
     ProtocolLibrary.getProtocolManager().addPacketListener(this);
     Bukkit.getPluginManager().registerEvents(this, ProReplay.getInstance());
   }
@@ -136,7 +136,7 @@ public class Recorder extends PacketAdapter implements Listener {
         .createTeleportPacket(this.recordedPlayer, this.recordedPlayer.getLocation()));
   }
 
-  public void stop() {
+  public void stopAndSave() {
     this.recording = false;
     this.meta.setDuration(System.currentTimeMillis() - this.startTime);
     try {

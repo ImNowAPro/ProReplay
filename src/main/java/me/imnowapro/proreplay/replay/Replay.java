@@ -2,7 +2,6 @@ package me.imnowapro.proreplay.replay;
 
 import java.util.LinkedList;
 import java.util.Random;
-import me.imnowapro.proreplay.replay.recording.Recorder;
 
 public class Replay {
 
@@ -12,10 +11,6 @@ public class Replay {
   public Replay(ReplayMeta meta, LinkedList<PacketData> packets) {
     this.meta = meta;
     this.packets = packets;
-  }
-
-  public Replay(Recorder recorder) {
-    this(recorder.getMeta(), recorder.getRecordedPackets());
   }
 
   public PacketData getPacket(int index) {

@@ -15,7 +15,7 @@ public class JoinQuitListener implements Listener {
     Recorder recorder = new Recorder(event.getPlayer().getName() + "_" + Replay.getRandomName(6),
         event.getPlayer(),
         ProReplay.getInstance().getConfig().getBoolean("writeDirectly"));
-    ProReplay.getInstance().getRecorder().put(event.getPlayer(), recorder);
+    ProReplay.getInstance().getRecorders().put(event.getPlayer(), recorder);
     recorder.start();
     /*try {
       ReplayReader reader = new ReplayReader(new File(ProReplay.getInstance().getReplayFolder(),
@@ -32,9 +32,11 @@ public class JoinQuitListener implements Listener {
 
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
-    if (ProReplay.getInstance().getRecorder().containsKey(event.getPlayer())) {
-      ProReplay.getInstance().getRecorder().get(event.getPlayer()).stop();
-      ProReplay.getInstance().getRecorder().remove(event.getPlayer());
+    if (ProReplay.getInstance().getRecorders().containsKey(event.getPlayer())) {
+      Recorder recorder = ProReplay.getInstance().getRecorders().get(event.getPlayer());
+      recorder.stopAndSave();
+      ProReplay.getInstance().getRecorders().remove(event.getPlayer());
+      ProReplay.getInstance().getReplays().add(recorder.getMeta());
     }
   }
 }

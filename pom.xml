@@ -8,7 +8,7 @@
     <artifactId>proreplay</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <name>ProReplay</name>
-    <description>Just record and replay.</description>
+    <description>Record replays on your server in .mcpr format</description>
     <developers>
         <developer>
             <id>main</id>

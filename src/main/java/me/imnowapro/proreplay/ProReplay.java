@@ -32,7 +32,7 @@ public class ProReplay extends JavaPlugin implements Listener {
   private File replayFolder;
 
   private final Collection<ReplayMeta> replays = new HashSet<>();
-  private final Map<Player, Recorder> recorder = new HashMap<>();
+  private final Map<Player, Recorder> recorders = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -59,6 +59,7 @@ public class ProReplay extends JavaPlugin implements Listener {
 
   @Override
   public void onDisable() {
+    this.recorders.values().forEach(Recorder::stopAndSave);
     getLogger().info("Successfully unloaded ProReplay.");
   }
 
@@ -105,8 +106,8 @@ public class ProReplay extends JavaPlugin implements Listener {
     return this.replays;
   }
 
-  public Map<Player, Recorder> getRecorder() {
-    return this.recorder;
+  public Map<Player, Recorder> getRecorders() {
+    return this.recorders;
   }
 
   public static ProReplay getInstance() {
